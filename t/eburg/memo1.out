@@ -1,0 +1,79 @@
+creating ETS tables
+'BAZ': labeling kids
+'BAZ': labeling kids
+'BAR': labeling kids
+'BAR': labeling kids
+'FOO': labeling kids
+'FOO': kids labeled
+new id: 0
+'FOO': state calculated and saved: {burm_state,
+                                       {16777216,16777216,16777216,16777216,0},
+                                       <<1>>,
+                                       0}
+
+'BAR': kids labeled
+new id: 1
+'BAR': state calculated and saved: {burm_state,
+                                       {16777216,16777216,16777216,0,16777216},
+                                       <<16>>,
+                                       1}
+
+'BAR': kids labeled
+new id: 2
+'BAR': state calculated and saved: {burm_state,
+                                       {16777216,16777216,0,16777216,16777216},
+                                       <<" ">>,2}
+
+'BAZ': kids labeled
+new id: 3
+'BAZ': state calculated and saved: {burm_state,
+                                       {16777216,0,16777216,16777216,16777216},
+                                       <<"@">>,3}
+
+'BAZ': kids labeled
+new id: 4
+'BAZ': state calculated and saved: {burm_state,
+                                       {0,16777216,16777216,16777216,16777216},
+                                       <<128>>,
+                                       4}
+
+start <- BAZ(quux3)
+  quux3 <- BAZ(quux2)
+    quux2 <- BAR(quux1)
+      quux1 <- BAR(quux0)
+        quux0 <- FOO
+
+'BAZ': labeling kids
+'BAZ': labeling kids
+'BAR': labeling kids
+'BAR': labeling kids
+'FOO': labeling kids
+'FOO': kids labeled
+'FOO': state found: {burm_state,{16777216,16777216,16777216,16777216,0},
+                                <<1>>,
+                                0}
+
+'BAR': kids labeled
+'BAR': state found: {burm_state,{16777216,16777216,16777216,0,16777216},
+                                <<16>>,
+                                1}
+
+'BAR': kids labeled
+'BAR': state found: {burm_state,{16777216,16777216,0,16777216,16777216},
+                                <<" ">>,2}
+
+'BAZ': kids labeled
+'BAZ': state found: {burm_state,{16777216,0,16777216,16777216,16777216},
+                                <<"@">>,3}
+
+'BAZ': kids labeled
+'BAZ': state found: {burm_state,{0,16777216,16777216,16777216,16777216},
+                                <<128>>,
+                                4}
+
+start <- BAZ(quux3)
+  quux3 <- BAZ(quux2)
+    quux2 <- BAR(quux1)
+      quux1 <- BAR(quux0)
+        quux0 <- FOO
+

@@ -1,0 +1,231 @@
+%% Test some ``special cases'':
+%%   * [, ], and : in dyncost code, . in semact code
+%%   * space around delimiters in dyncost and semact code
+%%   * using semantic actions to annotate the input tree
+%%   * dynamic leaves
+%%   * deeply nested patterns
+%%   * arity > 2
+%%   * minimal subject ree
+%%   * creative dyncost and semact code
+%%   * BURM runtime exns
+
+Terminals FOO BAR BAZ QUUX PLUGH XYZZY  FROBOZZ.
+Start start.
+
+%%-----------------------------------------------------------------------------
+
+%% Root
+start <- gloop  : Node0 = annotate('$1', rule1),
+                  case Node0#tree.op of
+                      'FOO' -> annotate(Node0, foo);
+                      _     -> annotate(Node0, other)
+                  end.
+start <- garply : annotate('$1', rule2).
+
+
+%% Branches
+gloop  <- garply 1 : annotate('$1', rule3).
+
+gloop  <- FOO(PLUGH,PLUGH,PLUGH,PLUGH) :
+    annotate('$a', rule4).
+
+%%-----------------------------------------------------------------------------
+
+gloop  <- FOO(BAR(BAZ(garply,
+                      PLUGH)),
+              waldo,
+              XYZZY,
+              BAZ(BAR(thud),
+                  BAR(fred)))  [: (kid(2, kid(4, '$a')))#tree.val :] :
+    [A, _B, C, D] = kids('$a'),
+    Baz = kid(1, A),
+    K0 = kids_set(Baz, ['$1', kid(2, Baz)]),
+    K1 = kids_set(A, [K0]),
+    K2 = kids_set(kid(1, D), ['$3']),
+    K3 = kids_set(kid(2, D), ['$4']),
+    K4 = kids_set(D, [K2, K3]),
+    Ks = [K1, '$2', C, K4],
+    annotate('$a', rule5, Ks).
+
+garply <- BAZ(BAR(PLUGH), BAR(PLUGH)) 0     : annotate('$a', rule6).
+waldo  <- BAR(BAZ(PLUGH, PLUGH))      [:1:] : annotate('$a', rule7).
+
+
+
+garply <- FOO(waldo,waldo,garply,garply)
+              [: case (kid(1, (kid(1, (kid(1, '$a'))))))#tree.op of
+                     'XYZZY' -> 0;
+                     _ -> 42
+                 end :]
+              : annotate('$a', rule8, ['$1', '$2', '$3', '$4']).
+
+waldo  <- BAR(garply)         [:2:]             : annotate('$a', rule9, ['$1']).
+waldo  <- BAZ(garply, garply) 2                 : annotate('$a', rule10, ['$1', '$2']).
+garply <- waldo               1                 : annotate('$1', rule11).
+waldo  <- garply              [:'$a'#tree.val:] : annotate('$1', rule12).
+garply <- BAZ(waldo, waldo)   1                 : annotate('$a', rule13, ['$1', '$2']).
+
+%%-----------------------------------------------------------------------------
+
+%% for nomatch
+waldo  <- QUUX(XYZZY, PLUGH) 1 : annotate('$a', rule14).
+
+%% for coverage
+start <- choochoo.
+choochoo <- FROBOZZ 666.
+
+%%-----------------------------------------------------------------------------
+
+garply <- thud 1 : annotate('$1', rule16).
+
+%% Leaves
+thud <- fred  [:'$a'#tree.val+erlang:length([]):] :   annotate('$1', rule17).
+fred <- PLUGH 1                                   :annotate('$a', rule18) .
+fred <- XYZZY 0                                   :annotate('$a', rule19).  %
+
+fred <- thud                                      :   
+                                                      annotate('$1', rule20)   .  
+thud <- PLUGH 2                                   :
+    Node0 = '$a',
+    Node1 = annotate(Node0, 3.1415*42),
+    annotate(Node1, rule21).
+
+%%-----------------------------------------------------------------------------
+
+Erlang code.
+-export([main/0]).
+-include("../interface.hrl").
+-compile(export_all).
+-define(err(Tree),
+        io:format("~s~n",
+                  [format_error(
+                     element(2, (catch rewrite(Tree))))])).
+
+%% exns
+e0() -> l('FROB').
+e1() -> n('QUUX', [l('PLUGH'), l('PLUGH')]).
+e2() -> n('FOO', [l('PLUGH')]).
+
+%% trees
+t0() -> l('XYZZY').
+
+t1() ->
+    n('FOO', [l('PLUGH'), l('PLUGH'), l('PLUGH'), l('PLUGH')]).
+
+t2() ->
+    n('FOO', [n('BAR', [n('BAZ', [n('BAZ', [n('BAR', [l('PLUGH')]),
+                                            n('BAR', [l('PLUGH')])]),
+                                  l('PLUGH')])]),
+              n('BAR', [n('BAZ', [l('PLUGH'),
+                                  l('PLUGH')])]),
+              l('XYZZY'),
+              n('BAZ', [n('BAR', [l('PLUGH')]),
+                        n('BAR', [l('PLUGH')])])]).
+
+t3() ->
+    n('FOO', [n('BAR', [n('BAZ', [n('BAZ', [n('BAR', [l('PLUGH')]),
+                                            n('BAR', [l('PLUGH')])]),
+                                  l('PLUGH', 2)])]),
+              n('BAR', [n('BAZ', [l('PLUGH'),
+                                  l('PLUGH')])]),
+              l('XYZZY'),
+              n('BAZ', [n('BAR', [l('PLUGH')]),
+                        n('BAR', 100, [l('PLUGH')])])]).
+
+
+t4() ->
+    n('FOO', [n('BAR', [n('BAZ', [l('XYZZY'),
+                                  l('PLUGH')])]),
+              n('BAZ', [n('BAR', [l('PLUGH')]),
+                        n('BAR', [l('PLUGH')])]),
+              l('XYZZY'),
+              n('BAZ', [n('BAR', [l('XYZZY')]),
+                        n('BAR', [l('XYZZY')])])]).
+
+
+t5() ->
+    n('FOO', [n('BAR', [n('BAZ', [l('XYZZY'),
+                                  l('PLUGH')])]),
+              n('BAZ', 13, [n('BAR', [l('PLUGH')]),
+                            n('BAR', [l('PLUGH')])]),
+              l('XYZZY'),
+              n('BAZ', [n('BAR', [l('XYZZY')]),
+                        n('BAR', 20, [l('XYZZY')])])]).
+
+%% t() ->
+%%     n('FOO', [n('BAR', [n('BAZ', [XXX,
+%%                                   l('PLUGH')])]),
+%%               XXX,
+%%               l('XYZZY'),
+%%               n('BAZ', [n('BAR', [XXX]),
+%%                         n('BAR', [XXX])])]).
+
+main() ->
+    io:format("Runtime errors:~n"),
+    io:format("===============~n"),
+    ?err(e0()),
+    ?err(e1()),
+    ?err(e2()),
+    io:format("~n"),
+
+    io:format("XYZZY~n~n"),    
+    io:format("T0: XYZZY~n~n"),    
+    T0 = label(t0()),
+    dumplabels(T0),
+    dumpcover(T0),
+
+    io:format("          FOO~n"),
+    io:format("    /     | |     \\~n"),
+    io:format("PLUGH PLUGH PLUGH PLUGH~n~n"),
+    io:format("T1:~n"),
+    dumpcover(label(t1())),
+    dumpannotations(rewrite(t1())),
+
+    io:format("                         FOO~n"),
+    io:format("         /               | |        \\~n"),
+    io:format("       BAR             BAR XYZZY     BAZ~n"),
+    io:format("        |               |            / \\~n"),
+    io:format("       BAZ             BAZ        BAR  BAR~n"),
+    io:format("      /   \\           /  \\         |    |~n"),
+    io:format("    BAZ  PLUGH    PLUGH PLUGH    PLUGH PLUGH~n"),
+    io:format("   /  \\~n"),
+    io:format(" BAR  BAR~n"),
+    io:format("  |    |~n"),
+    io:format("PLUGH PLUGH~n~n"),
+    io:format("T2:~n"),
+    dumpcover(label(t2())),
+    dumpannotations(rewrite(t2())),
+    
+    io:format("T3:~n"),
+    dumpcover(label(t3())),
+    dumpannotations(rewrite(t3())),
+
+    io:format("                      FOO~n"),
+    io:format("      /               | |        \\~n"),
+    io:format("    BAR             BAZ XYZZY     BAZ~n"),
+    io:format("     |              / \\           / \\~n"),
+    io:format("   BAZ           BAR BAR        BAR  BAR~n"),
+    io:format("  /   \\           |   |          |    |~n"),
+    io:format("XYZZY  PLUGH   PLUGH PLUGH    XYZZY XYZZY~n~n"),
+
+    io:format("T4:~n"),
+    dumpcover(label(t4())),
+    dumpannotations(rewrite(t4())),
+
+    io:format("T5:~n"),
+    dumpcover(label(t5())),
+    dumpannotations(rewrite(t5())).
+
+
+dumpannotations(Tree) ->
+    io:format("~p~n", [collect_annotations(Tree)]),
+    io:format("~n").
+
+collect_annotations(#tree{annotations=As, kids=[]}) ->
+    As;
+collect_annotations(#tree{annotations=As, kids=Ks}) ->
+    As ++ lists:flatmap(fun collect_annotations/1, Ks).
+
+%%% Local Variables:
+%%% mode: erlang
+%%% End:

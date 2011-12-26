@@ -1,0 +1,2 @@
+eburg/badcode.brl:9: bad user code: syntax error before: 'div'
+eburg/badcode.brl:17: bad user code: syntax error before: quux

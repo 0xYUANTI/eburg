@@ -1,0 +1,9 @@
+
+Terminals FOO.
+
+frob <- foo(bar).
+bar <- FOO.
+
+Erlang Code.
+
+%%% eof

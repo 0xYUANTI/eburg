@@ -1,0 +1,48 @@
+
+Terminals ADD SUB MUL DIV CONST ZERO STRING CONS.
+
+%% start <- str    : io:format("Cost: ~p ~n",[?burm_cost(?start, '$a')]).
+%% start <- number : io:format("Cost: ~p ~n",[?burm_cost(?start, '$a')]).
+
+number <- ADD(number, number)              2 : '$1' + '$2'.
+number <- ADD(number, ADD(number, number)) 2 : '$1' + '$2' + '$3'.
+number <- ADD(number, ZERO)                1 : '$1'.
+number <- ADD(ZERO, ZERO)                  0 : 0.
+number <- SUB(number, number)                : '$1' - '$2'.
+number <- MUL(number, number)                : '$1' * '$2'.
+number <- DIV(number, number)                : case '$2' of
+                                                   0 -> throw(div_by_zero);
+                                                   _ -> '$1' / '$2'
+                                               end.
+number <- CONST                            1 : val('$a').
+number <- ZERO                             0 : 0.
+
+str    <- STRING   [:length('$a'#tree.val):] : val('$a').
+str    <- CONS(STRING, STRING)             2 : val(1, '$a') ++ val(2, '$a' ).
+str    <- number                           1 : integer_to_list('$1').
+number <- str                              1 : list_to_integer('$1').
+
+
+Erlang code.
+-export([main/0]).
+-compile(export_all).
+-include("../interface.hrl").
+
+t0() ->
+    n('ADD', [l('ZERO'),
+              n('ADD', [l('CONST', 3),
+                        l('CONST', 7)])]).
+
+t1() ->
+    n('ADD', [n('ADD', [l('STRING', "123"),
+                        l('CONST', 8)]),
+              n('ADD',[l('CONST', 7),
+                       l('ZERO')])]).
+
+main() ->
+    io:format("~p~n", [rewrite(t0())]),
+    io:format("~p~n", [rewrite(t1())]).
+
+%%% Local Variables:
+%%% mode: erlang
+%%% End:

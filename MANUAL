@@ -1,0 +1,196 @@
+
+= USER'S GUIDE =
+== Overview ==
+eburg is an Erlang implementation of the iburg tree parser generator
+system, with some extensions:
+    - Like lburg, eburg supports dynamic costs
+    - eburg's input specifications may contain semantic action code
+    - eburg's labeler uses memoization
+
+eburg's input is a file containing a description of some target
+machine in the form of a set of rewrite rules.
+Each rule consists of a nonterminal, a linearized tree pattern,
+a cost expression, and a semantic action.
+
+eburg generates an Erlang module which exports functions which may be
+used to rewrite expression trees to some designated start nonterminal
+(using the rules provided; the tree patterns are matched against the
+input tree until a minimum-cost cover is found) and generate code for
+the expression tree by executing the semantic actions associated
+with the rules used.
+
+You should now read Fraser, Hanson, and Proebsting's paper on iburg
+(referenced below), or the following won't make much sense.
+Also, if you're interested in eburg's internals, see Ertl, Casey,
+and Gregg's paper for a discussion of memoization in iburg-style
+systems.
+
+In the remainder, the input file given to eburg will be referred to
+as ``the specification'', we will call the code generator generated
+by eburg ``BURM'' and BURM's input trees, we shall refer to as
+``subject trees''; eburg views subject trees as an abstract data type
+which we shall call the ``tree()'' type.
+
+
+== Specifications ==
+The user provides eburg with a .brl file containing a machine description
+in the following format:
+
+    spec    -> decls rule+ code
+    decls   -> Terminals op+.
+               {start}
+    start   -> Start nonterm.
+
+    op      -> [A-Z]([A-Z]|[0-9]|_)*
+    nonterm -> [a-z]([a-z]|[0-9]|_)*
+
+    rule    -> nonterm <- tree {cost} {: action}.
+
+    tree    -> nonterm
+    tree    -> op
+    tree    -> op(tree{, tree}*)
+
+    cost    -> [0-9]+
+    cost    -> [: expr :]
+    action  -> expr
+
+    code -> Erlang code.
+
+Everything after code is included verbatim in the output file.
+%-comments are allowed anywhere within the specification.
+expr is any valid Erlang expression (or sequence of expressions).
+exprs may contain references to certain pseudo-variables.
+In particular, any occurrences of '$a' in cost code will be rewritten
+to point to the ``current node'' (the root of the subtree against
+which the rule in which the cost expression occurs is being matched),
+so information about the subject tree beyond its operator may be used
+at runtime to compute the cost of a rule application.
+Semantic action code may additionally use '$1' to '$64' to refer to
+the results of reducing the nonterminals on the right-hand side of
+its rule.
+
+Example:
+Assuming subject tree nodes are represented as records, e.g.
+
+    -record(tree, {op, val, kids, ...}).
+
+you may then write rules such as the following
+
+    start <- frob                            : format('$1'++"~n").
+    frob  <- FOO(bar, baz) [:'$a'#tree.val:] : '$1' ++ '$2'.
+    bar   <- INT                             : integer_to_list('$a'#tree.val).
+    baz   <- STR                             : '$a'#tree.val.
+
+Reducing
+
+    #tree{op='FOO', val=42, kids=[#tree{op='INT', val=1},
+                                  #tree{op='STR', val="quux"}], ...}
+
+i.e.
+
+      FOO
+      / \
+    INT STR
+
+to start would then print ``1quux\n'' (at cost 42).
+
+BURM interfaces with the user-defined subject trees by relying on five
+functions which the user must provide in the user code section.
+
+    kids            :: tree() -> [tree()]
+    kids_set        :: (tree(), [tree()]) -> tree()
+    op_label        :: tree() -> atom()
+    state_label     :: tree() -> state()
+    state_label_set :: (tree(), state()) -> tree()
+
+op_label should return the argument node's operator.
+kids must return the node's children in the order in which they are used on the
+right-hand sides of rules.
+e.g.
+
+    -record(tree, {op, left, right})
+    kids(#tree{left=L, right=R}) -> [L, R].
+    kids_set(Tree, [L, R])       -> Tree#tree{left=L, right=R}.
+
+state_label and state_label_set must fulfill the invariant
+
+    state_label(state_label_set(Tree, Label)) =:= Label
+
+Other than that, the user doesn't have to concern herself with the state() type.
+
+
+== Exports ==
+eburg:file/1, eburg:file/2 or the shell script $EBURG/bin/eburg should be used
+to generate a code generator from a specification.
+eburg will produce a file with the same basename as the input file but ending
+in .erl rather than .brl.
+
+eburg understands the following options:
+
+         file/2     | eburg.sh
+    ----------------+----------
+    {verbose, true} | -v
+    {outdir, dir}   | -o dir
+
+The generated code generator exports (in addition to any functions exported by
+the user code):
+
+    rewrite/1    -- The main entry point; labels and then reduces a subject tree
+    label/1      -- Only calculates labels
+    reduce/2     -- reduces a labeled tree to some nonterminal and fires the
+                    user provided actions
+    dumpcover    -- reduces a labeled tree to the start nonterminal and prints
+                    the rule cover to stdout
+    dumplabels   -- dumps the complete state labels to stdout
+    format_error -- any runtime errors will result in a {burm_exn, Reason} being
+                    thrown. format_error converts Reason into an error message
+    dump         -- dumps the ETS tables used for memoization to disk.
+                    If dumpfiles exists when the labeler is started it will load
+                    them to initialize its ETS tables automatically.
+
+
+== Naming ==
+User's should avoid using names wich match Burm* or burm_* in the dynamic cost,
+semantic action and user code.
+
+
+== Dynamic cost code ==
+... should not have side effects.
+
+
+== Examples ==
+For examples, see the .brl files under the t/ directory.
+In particular, t/interface.hrl shows a minimal user provided tree()
+interface and t/ml-burg/example2.brl gives a good impression of
+what a machine description might look like.
+
+
+= REFERENCES =
+== Related Software ==
+iburg was the original ``interpreted BURG''. The idea has since been
+implemented a number of times, the most notable systems being:
+  - lburg, an extended version of iburg used by the LCC compiler
+  - ML-Burg, a Standard ML version of iburg which is part of the
+    SML/NJ distribution
+  - OCamlBurg, which is used by the C-- project
+  - MonoBurg, which used to be part of the Mono JIT
+
+
+== Papers ==
+@reference Christopher W. Fraser, David R. Hanson, and Todd A. Proebsting.
+<em>Engineering a simple, efficient code generator generator</em>.
+AMC Letters on Programming Languages and Systems, 1992.
+
+@reference M. Anton Ertl, Kevin Casey, David Gregg.
+<em>Fast and Flexible Instruction Selection with On-Demand Tree-Parsing
+Automata</em>.
+ACM Conference on Programming Language Design and Implementation, 2006.
+
+
+= TODO =
+TODO: edocify the documentation
+TODO: allow lower case ops to avoid quoting?
+TODO: make order in which actions will be fired by reducer optional?
+TODO: comment leaf cases in burm_state
+
+%%% eof

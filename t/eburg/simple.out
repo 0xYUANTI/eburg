@@ -1,0 +1,8 @@
+start <- reg
+  reg <- FETCH(addr)
+    addr <- reg
+      reg <- FETCH(addr)
+        addr <- PLUS(reg, burm_nt0)
+          reg <- REG
+          burm_nt0 <- INT
+

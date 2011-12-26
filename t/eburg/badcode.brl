@@ -1,0 +1,19 @@
+Terminals FOO BAR.
+
+foo <- BAR.
+
+Erlang code.
+
+foo() -> 1.
+
+div
+
+bar() -> 2.
+
+baz() -> 3.
+
+fr0bz
+
+quux() -> 4.
+
+%%% eof

@@ -1,0 +1,8 @@
+eburg/badspec.brl: Warning: operator not used: 'BAZ'
+eburg/badspec.brl: Warning: operator not used: 'FROB'
+eburg/badspec.brl: Warning: nonterminal not reachable from start symbol: foo2
+eburg/badspec.brl:7: bad semantic action: syntax error before: 'div'
+eburg/badspec.brl:6: bad dynamic cost: syntax error before: 'div'
+eburg/badspec.brl: multiple operator declarations: ['BAR']
+eburg/badspec.brl:5: used as operator but not declared: 'FOO0'
+eburg/badspec.brl: operator used with different arities: 'BAR': [0,1]

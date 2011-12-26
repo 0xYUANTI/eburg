@@ -1,0 +1,15 @@
+This is a variant of the burg grammar for Gforth created for a newer
+version of Gforth.
+
+You also find the file brew-sequences that contains the basic blocks
+present in Gforth with the brew benchmark.  Using these sequences with
+the grammar: The leftmost operator is the root, the rightmost operator
+is the immediate parent of the leaf, and the leaf is s0.  Ignore empty
+basic blocks.
+
+These sequences were generated with a Gforth compiled with
+-DBURG_FORMAT and the following command:
+
+gforth --print-sequences -e "warnings off create startup-bench" ~/forth-bench/brew-transit_38/brew.fs 2>brew-sequences
+
+- anton

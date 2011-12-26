@@ -1,0 +1,12 @@
+stm <- MOVE(burm_nt0, reg)
+  burm_nt0 <- MEM(loc)
+    loc <- NAME
+  reg <- PLUS(burm_nt0, reg)
+    burm_nt0 <- MEM(loc)
+      loc <- PLUS(burm_nt1, reg)
+        burm_nt1 <- NAME
+        reg <- MEM(loc)
+          loc <- NAME
+    reg <- con
+      con <- CONST
+

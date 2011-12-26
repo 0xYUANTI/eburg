@@ -1,0 +1,34 @@
+%%% Dyncost in crule contaminates ruleset.
+
+Terminals FOO BAR BAZ.
+
+start <- foo.
+
+foo <- bar  [: '$a'#tree.val :].
+bar <- baz.
+baz <- quux.
+
+foo  <- nt0.
+bar  <- nt1.
+quux <- nt2.
+
+nt0 <- FOO(nt1).
+nt1 <- FOO(nt2).
+nt1 <- BAR(nt0).
+nt1 <- BAR(nt2).
+nt2 <- BAZ.
+
+
+Erlang code.
+-export([main/0]).
+-include("../interface.hrl").
+
+t() ->
+    l('BAZ').
+
+main() ->
+    dumpcover(label(t())).
+
+%%% Local Variables:
+%%% mode: erlang
+%%% End:

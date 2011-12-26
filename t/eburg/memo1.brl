@@ -1,0 +1,27 @@
+%% No state equivalence due to different optimal rules.
+%% All lookups succeed when labelling for the second time.
+
+Terminals FOO BAR BAZ.
+
+start <- BAZ(quux3).
+quux3 <- BAZ(quux2).
+quux2 <- BAR(quux1).
+quux1 <- BAR(quux0).
+quux0 <- FOO.
+
+
+Erlang code.
+-export([main/0]).
+-include("../interface.hrl").
+
+t() ->
+    n('BAZ', [n('BAZ', [n('BAR', [n('BAR', [l('FOO')])])])]).
+
+main() ->
+    dumpcover(label(t())),
+    dumpcover(label(t())).
+
+
+%%% Local Variables:
+%%% mode: erlang
+%%% End:

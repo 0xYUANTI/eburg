@@ -1,0 +1,31 @@
+
+Terminals ADDI ADDRLP ASGNI CNSTI CVCI I0I INDIRC.
+
+stmt <- ASGNI(disp, reg)   1.
+stmt <- reg.
+reg  <- ADDI(reg, rc)      1.
+reg  <- CVCI(INDIRC(disp)) 1.
+reg  <- I0I.
+reg  <- disp               1.
+disp <- ADDI(reg, con).
+disp <- ADDRLP.
+rc   <- con.
+rc   <- reg.
+con  <- CNSTI.
+con  <- I0I.
+
+Erlang code.
+-export([main/0]).
+-include("../interface.hrl").
+
+t() ->
+    n('ASGNI', [l('ADDRLP'),
+                n('ADDI', [n('CVCI', [n('INDIRC', [l('ADDRLP')])]),
+                           l('CNSTI', 4)])]).
+
+main() ->
+    dumpcover(label(t())).
+
+%%% Local Variables:
+%%% mode: erlang
+%%% End:

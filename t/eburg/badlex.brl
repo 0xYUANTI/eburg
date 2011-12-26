@@ -1,0 +1,8 @@
+
+Terminals FOO BAR;
+
+frob <- FOO(BAR).
+
+Erlang Code.
+
+%%% eof

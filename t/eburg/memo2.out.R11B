@@ -1,0 +1,91 @@
+creating ETS tables
+'BAZ': labeling kids
+'BAZ': labeling kids
+'BAR': labeling kids
+'BAR': labeling kids
+'FOO': labeling kids
+'FOO': kids labeled
+new id: 0
+'FOO': state calculated and saved: {burm_state,
+                                       {16777216,16777216,16777216,0,16777216},
+                                       <<"\b">>,
+                                       0}
+
+'BAR': kids labeled
+new id: 1
+'BAR': state calculated and saved: {burm_state,
+                                       {16777216,1,16777216,1,0},
+                                       <<"E">>,
+                                       1}
+
+'BAR': kids labeled
+reusing id: 1
+'BAR': state calculated and saved: {burm_state,
+                                       {16777216,1,16777216,1,0},
+                                       <<"E">>,
+                                       1}
+
+'BAZ': kids labeled
+'BAZ': Key1 is {{'BAZ',1},{0}}
+new id: 2
+'BAZ': swdc calculated and saved: {burm_state,
+                                      {2,1,0,16777216,16777216},
+                                      <<"°">>,
+                                      2}
+
+'BAZ': kids labeled
+'BAZ': Key1 is {{'BAZ',2},{0}}
+reusing id: 2
+'BAZ': swdc calculated and saved: {burm_state,
+                                      {2,1,0,16777216,16777216},
+                                      <<"°">>,
+                                      2}
+
+start <- quux3
+  quux3 <- BAZ(quux2)
+    quux2 <- quux3
+      quux3 <- BAZ(quux2)
+        quux2 <- quux1
+          quux1 <- BAR(quux0)
+            quux0 <- quux1
+              quux1 <- BAR(quux0)
+                quux0 <- FOO
+
+'BAZ': labeling kids
+'BAZ': labeling kids
+'BAR': labeling kids
+'BAR': labeling kids
+'FOO': labeling kids
+'FOO': kids labeled
+'FOO': state found: {burm_state,{16777216,16777216,16777216,0,16777216},
+                                <<"\b">>,
+                                0}
+
+'BAR': kids labeled
+'BAR': state found: {burm_state,{16777216,1,16777216,1,0},<<"E">>,1}
+
+'BAR': kids labeled
+'BAR': state found: {burm_state,{16777216,1,16777216,1,0},<<"E">>,1}
+
+'BAZ': kids labeled
+'BAZ': Key1 is {{'BAZ',1},{1}}
+reusing id: 2
+'BAZ': swdc calculated and saved: {burm_state,
+                                      {2,1,0,16777216,16777216},
+                                      <<"°">>,
+                                      2}
+
+'BAZ': kids labeled
+'BAZ': Key1 is {{'BAZ',2},{0}}
+'BAZ': swdc found: {burm_state,{2,1,0,16777216,16777216},<<"°">>,2}
+
+start <- quux3
+  quux3 <- BAZ(quux2)
+    quux2 <- quux3
+      quux3 <- BAZ(quux2)
+        quux2 <- quux1
+          quux1 <- BAR(quux0)
+            quux0 <- quux1
+              quux1 <- BAR(quux0)
+                quux0 <- FOO
+

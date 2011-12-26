@@ -1,0 +1,9 @@
+stmt <- ASGNI(disp, reg)
+  disp <- ADDRLP
+  reg <- ADDI(reg, rc)
+    reg <- CVCI(burm_nt0)
+      burm_nt0 <- INDIRC(disp)
+        disp <- ADDRLP
+    rc <- con
+      con <- CNSTI
+

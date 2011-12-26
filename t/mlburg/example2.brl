@@ -1,0 +1,130 @@
+
+Terminals INT VAR ADD SUB MUL DIV NEG.
+Start reg.
+
+%%                                 INSTR  OP1         OP2            MOD
+%%                                 =====  ===         ===            ===
+reg  <- INT             1 : emit(ldi,   val('$a'),                 fun aai/1).
+sreg <- INT             1 : emit(ldi,   val('$a'),                 fun aa/1 ).
+ureg <- INT             1 : emit(ldi,   val('$a')                           ).
+
+reg  <- VAR             1 : emit(ld,    val('$a'),                 fun ref/1).
+
+reg  <- sreg            1 : emit(inc,   '$1'                                ).
+sreg <- reg             1 : emit(dec,   '$1'                                ).
+sreg <- ureg            1 : emit(shl,   '$1'                                ).
+ureg <- sreg            1 : emit(shr,   '$1'                                ).
+ureg <- reg             1 : emit(shr,   '$1'                                ).
+
+reg  <- ADD(reg, sreg)  1 : emit(add,   '$1',       '$2'                    ).
+reg  <- ADD(sreg, reg)  1 : emit(add,   '$1',       '$2'                    ).
+reg  <- ADD(INT, reg)   1 : emit(addi,  '$2',       val(1, '$a'),  fun aa/1 ).
+reg  <- ADD(reg, INT)   1 : emit(addi,  '$1',       val(2, '$a'),  fun aa/1 ).
+reg  <- ADD(INT, sreg)  1 : emit(addi,  '$2',       val(1, '$a'),  fun aai/1).
+reg  <- ADD(sreg, INT)  1 : emit(addi,  '$1',       val(2, '$a'),  fun aai/1).
+sreg <- ADD(sreg, sreg) 1 : emit(add,   '$1',       '$2'                    ).
+sreg <- ADD(INT, sreg)  1 : emit(addi,  '$2',       val(1, '$a'),  fun aa/1 ).
+sreg <- ADD(sreg, INT)  1 : emit(addi,  '$1',       val(2, '$a'),  fun aa/1 ).
+sreg <- ADD(INT, reg)   1 : emit(addi,  '$2',       val(1, '$a'),  fun aad/1).
+sreg <- ADD(reg, INT)   1 : emit(addi,  '$1',       val(2, '$a'),  fun aad/1).
+
+reg  <- SUB(reg, sreg)  1 : emit(sub,   '$1',       '$2'                    ).
+reg  <- SUB(INT, reg)   2 : R=reg4u(),
+                            emit(ldi,   R,          val(1, '$a'),  fun aai/1),
+                            emit(sub,   R,          '$2'                    ).
+reg  <- SUB(reg, INT)   1 : emit(subi,  '$1',       val(2, '$a'),  fun aa/1 ).
+reg  <- SUB(sreg, INT)  1 : emit(subi,  '$1',       val(2, '$a'),  fun aad/1).
+sreg <- SUB(sreg, sreg) 1 : emit(sub,   '$1',       '$2'                    ).
+sreg <- SUB(reg, reg)   1 : emit(sub,   '$1',       '$2'                    ).
+sreg <- SUB(sreg, INT)  1 : emit(subi,  '$1',       val(2, '$a'),  fun aa/1 ).
+sreg <- SUB(reg, INT)   1 : emit(subi,  '$1',       val(2, '$a'),  fun aai/1).
+
+sreg <- MUL(sreg, ureg) 1 : emit(mul,   '$1',       '$2'                    ).
+sreg <- MUL(ureg, sreg) 1 : emit(mul,   '$1',       '$2'                    ).
+sreg <- MUL(INT, sreg)  1 : emit(muli,  '$2',       val(1, '$a')            ).
+sreg <- MUL(sreg, INT)  1 : emit(muli,  '$1',       val(2, '$a')            ).
+sreg <- MUL(INT, ureg)  1 : emit(muli,  '$2',       val(1, '$a'),  fun aa/1 ).
+sreg <- MUL(ureg, INT)  1 : emit(muli,  '$1',       val(2, '$a'),  fun aa/1 ).
+
+ureg <- DIV(sreg, sreg) 1 : emit("div", '$1',       '$2'                    ).
+ureg <- DIV(ureg, ureg) 1 : emit("div", '$1',       '$2'                    ).
+ureg <- DIV(ureg, INT)  1 : emit(divi,  '$1',       val(2, '$a')            ).
+
+reg  <- NEG(reg)        2 : emit(neg,   '$1'                                ),
+                            emit(addi,  '$1'                                ).
+ureg <- NEG(ureg)       1 : emit(neg,   '$1'                                ).
+sreg <- NEG(sreg)       1 : emit(neg,   '$1'                                ).
+
+
+Erlang code.
+-export([main/0]).
+-include("../interface.hrl").
+
+
+%% Modifiers
+aa(N)  -> N + N.       % add add
+aai(N) -> N + N + 1.   % add add inc
+aad(N) -> N + N - 1.   % add add dec
+ref(V) -> "["++V++"]". % reference
+
+
+%% Printer
+emit(Instr, Op1) ->
+    print(Instr, Op1),
+    Op1.
+emit(Instr, Op1, Mod) when is_function(Mod, 1) ->
+    Reg = reg4u(),
+    print(Instr, Reg, Mod(Op1)),
+    Reg;
+emit(Instr, Op1, Op2) when is_integer(Op2);is_list(Op2) ->
+    print(Instr, Op1, Op2),
+    Op1.
+emit(Instr, Op1, Op2, Mod) ->
+    print(Instr, Op1, Mod(Op2)),
+    Op1.
+
+print(Instr, Op1) ->
+    io:put_chars(lists:concat([Instr, " ", Op1, "\n"])).
+print(Instr, Op1, Op2) ->
+    io:put_chars(lists:concat([Instr, " ", Op1, ", ", Op2, "\n"])).
+
+
+%% Sample trees
+t0() ->
+    n('SUB', [n('ADD', [l('VAR', "a"),
+                        l('INT', 2)]),
+              l('INT', 5)]).
+
+t1() ->
+    n('ADD', [n('DIV', [n('SUB', [l('VAR', "a"),
+                                  l('INT', 1)]),
+                        l('VAR', "b")]),
+              l('INT', 1)]).
+
+t2() ->
+    n('ADD', [l('VAR', "a"),
+              l('INT', 1)]).
+
+
+main() ->
+    reset(),
+    rewrite(t0()),
+    io:put_chars("\n"),
+    rewrite(t1()),
+    io:put_chars("\n"),
+    rewrite(t2()).
+
+
+%% register names
+reset() ->
+    put(counter, 1).
+
+reg4u() ->
+    N = get(counter),
+    put(counter, N+1),
+    "r" ++ integer_to_list(N).
+
+
+%%% Local Variables:
+%%% mode: erlang
+%%% End:

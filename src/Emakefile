@@ -1,0 +1,3 @@
+{['eburg', 'eburg_backend', 'eburg_frontend', 'eburg_lexer', 'eburg_parser',
+  'eburg_util'],
+ [{outdir, "../ebin"}, {i, "../include"}, debug_info]}.

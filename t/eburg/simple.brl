@@ -1,0 +1,28 @@
+
+Terminals REG INT FETCH PLUS.
+
+start <- reg.
+reg   <- REG.
+reg   <- INT            1.
+reg   <- FETCH(addr)    2.
+reg   <- PLUS(reg, reg) 2.
+addr  <- reg.
+addr  <- INT.
+addr  <- PLUS(reg, INT).
+
+
+Erlang code.
+-export([main/0]).
+-include("../interface.hrl").
+
+t() ->
+    n('FETCH', [n('FETCH', [n('PLUS', [l('REG'),
+                                       l('INT')])])]).
+
+main() ->
+    dumpcover(label(t())).
+
+
+%%% Local Variables:
+%%% mode: erlang
+%%% End:

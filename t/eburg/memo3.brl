@@ -1,0 +1,60 @@
+%%% More complex swdc equivalence.
+
+Terminals FOO BAR.
+
+start <- blorple 1.
+bar   <- blorple 1.
+baz   <- blorple 1.
+
+blorple <- FOO(bar, baz) 4.
+blorple <- FOO(quux, quux) [: case (val(1, '$a') =:= val(2, '$a')) 
+                                  andalso val(1, '$a') > 1 of
+                                  true  -> 1;
+                                  false -> 3
+                              end
+                            :].
+blorple <- FOO(bar, bar) 4.
+blorple <- FOO(baz, baz) 4.
+blorple <- FOO(blorp, frob) [: '$a'#tree.val + 1 :].
+
+quux <- bar 1.
+quux <- baz 1.
+
+blorp <- bar.
+frob  <- baz.
+
+bar <- BAR [: if '$a'#tree.val =:= 1 -> 0;
+                 true -> 2 
+              end
+            :].
+baz <- BAR [: if '$a'#tree.val =:= 0 -> 0;
+                 true -> 2 
+              end
+            :].
+
+
+Erlang code.
+-export([main/0]).
+-include("../interface.hrl").
+
+t0() ->
+    n('FOO', [n('FOO', 3, [n('FOO', 3, [l('BAR', 1),
+                                        l('BAR')]),
+                           l('BAR', 3)]),
+              l('BAR')]).
+
+t1() ->
+    n('FOO', [n('FOO', [n('FOO', 10, [l('BAR'),
+                                      l('BAR')]),
+                        l('BAR', 1)]),
+              l('BAR')]).
+
+
+main() ->
+    dumpcover(label(t0())),
+    dumpcover(label(t1())).
+    
+
+%%% Local Variables:
+%%% mode: erlang
+%%% End:

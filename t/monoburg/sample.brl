@@ -1,0 +1,40 @@
+
+Terminals ASSIGN CONSTANT FETCH FOUR MUL PLUS ALTFETCH.
+
+Start reg.
+
+con  <- CONSTANT                  0.
+con  <- FOUR                      0.
+addr <- con                       0.
+addr <- PLUS(con, reg)            1.
+addr <- PLUS(con, MUL(FOUR, reg)) 2.
+reg  <- ALTFETCH(addr)            1.
+reg  <- FETCH(addr)               1.
+reg  <- ASSIGN(addr, reg)         1.
+
+
+Erlang code.
+-export([main/0]).
+-include("../interface.hrl").
+
+t() ->
+    n('FETCH', [n('PLUS', [l('CONSTANT'),
+                           n('MUL', [l('FOUR'),
+                                     n('ASSIGN' , [l('CONSTANT'),
+                                                   n('FETCH', [l('CONSTANT')])])])])]).
+
+main() ->
+    dumpcover(label(t())).
+
+
+%%% Local Variables:
+%%% mode: erlang
+%%% End:
+
+
+
+
+
+
+
+

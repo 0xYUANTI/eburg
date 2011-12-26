@@ -1,0 +1,14 @@
+
+Terminals BAR BAZ QUUX FROB BAR. % BAR declared twice; FROB, BAZ unused
+Start foo0.                      % foo2 unreachable
+
+foo0 <- FOO0(BAR(foo1)).         % FOO0 undeclared, BAR/1
+foo1 <- BAR [:div:].             % BAR/0, bad dyncost
+foo2 <- QUUX : div.              % bad semantic action
+
+Erlang code.
+
+
+%%% Local Variables:
+%%% mode: erlang
+%%% End:

@@ -1,0 +1,116 @@
+creating ETS tables
+'FOO': labeling kids
+'FOO': labeling kids
+'FOO': labeling kids
+'BAR': labeling kids
+'BAR': kids labeled
+'BAR': Key1 is {{'BAR'},{0,2}}
+new id: 0
+'BAR': swdc calculated and saved: {burm_state,
+                                      {16777216,0,2,16777216,1,0,2},
+                                      <<"Pa">>,0}
+
+'BAR': labeling kids
+'BAR': kids labeled
+'BAR': Key1 is {{'BAR'},{2,0}}
+new id: 1
+'BAR': swdc calculated and saved: {burm_state,
+                                      {16777216,2,0,16777216,1,2,0},
+                                      <<"P¡">>,1}
+
+'FOO': kids labeled
+'FOO': Key1 is {{'FOO',0,1},{3,4}}
+new id: 2
+'FOO': swdc calculated and saved: {burm_state,{1,1,1,0,2,1,1},<<"©a">>,2}
+
+'BAR': labeling kids
+'BAR': kids labeled
+'BAR': Key1 is {{'BAR'},{2,2}}
+new id: 3
+'BAR': swdc calculated and saved: {burm_state,
+                                      {16777216,0,0,16777216,1,0,0},
+                                      <<"Pa">>,3}
+
+'FOO': kids labeled
+'FOO': Key1 is {{'FOO',2,3},{1,4}}
+new id: 4
+'FOO': swdc calculated and saved: {burm_state,{1,1,1,0,2,1,1},<<"ªa">>,4}
+
+'BAR': labeling kids
+'BAR': kids labeled
+'BAR': Key1 is {{'BAR'},{2,0}}
+'BAR': swdc found: {burm_state,{16777216,2,0,16777216,1,2,0},<<"P¡">>,1}
+
+'FOO': kids labeled
+'FOO': Key1 is {{'FOO',4,1},{3,1}}
+new id: 5
+'FOO': swdc calculated and saved: {burm_state,{1,1,1,0,2,1,1},<<"­a">>,5}
+
+start <- blorple
+  blorple <- FOO(blorp, frob)
+    blorp <- bar
+      bar <- blorple
+        blorple <- FOO(quux, quux)
+          quux <- bar
+            bar <- blorple
+              blorple <- FOO(bar, baz)
+                bar <- BAR
+                baz <- BAR
+          quux <- bar
+            bar <- BAR
+    frob <- baz
+      baz <- BAR
+
+'FOO': labeling kids
+'FOO': labeling kids
+'FOO': labeling kids
+'BAR': labeling kids
+'BAR': kids labeled
+'BAR': Key1 is {{'BAR'},{2,0}}
+'BAR': swdc found: {burm_state,{16777216,2,0,16777216,1,2,0},<<"P¡">>,1}
+
+'BAR': labeling kids
+'BAR': kids labeled
+'BAR': Key1 is {{'BAR'},{2,0}}
+'BAR': swdc found: {burm_state,{16777216,2,0,16777216,1,2,0},<<"P¡">>,1}
+
+'FOO': kids labeled
+'FOO': Key1 is {{'FOO',1,1},{3,11}}
+new id: 6
+'FOO': swdc calculated and saved: {burm_state,{1,1,1,0,2,1,1},<<"¬a">>,6}
+
+'BAR': labeling kids
+'BAR': kids labeled
+'BAR': Key1 is {{'BAR'},{0,2}}
+'BAR': swdc found: {burm_state,{16777216,0,2,16777216,1,0,2},<<"Pa">>,0}
+
+'FOO': kids labeled
+'FOO': Key1 is {{'FOO',6,0},{3,1}}
+reusing id: 5
+'FOO': swdc calculated and saved: {burm_state,{1,1,1,0,2,1,1},<<"­a">>,5}
+
+'BAR': labeling kids
+'BAR': kids labeled
+'BAR': Key1 is {{'BAR'},{2,0}}
+'BAR': swdc found: {burm_state,{16777216,2,0,16777216,1,2,0},<<"P¡">>,1}
+
+'FOO': kids labeled
+'FOO': Key1 is {{'FOO',5,1},{3,1}}
+reusing id: 5
+'FOO': swdc calculated and saved: {burm_state,{1,1,1,0,2,1,1},<<"­a">>,5}
+
+start <- blorple
+  blorple <- FOO(blorp, frob)
+    blorp <- bar
+      bar <- blorple
+        blorple <- FOO(blorp, frob)
+          blorp <- bar
+            bar <- blorple
+              blorple <- FOO(baz, baz)
+                baz <- BAR
+                baz <- BAR
+          frob <- baz
+            baz <- BAR
+    frob <- baz
+      baz <- BAR
+

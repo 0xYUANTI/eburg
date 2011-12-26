@@ -1,0 +1,183 @@
+Runtime errors:
+===============
+no such operator
+subject tree cannot be matched
+assertion failed
+
+XYZZY
+
+T0: XYZZY
+
+Operator: Nonterminal using Rule for Cost
+=========================================
+'XYZZY':
+  start using ``start <- garply'' for 1
+  gloop using ``gloop <- garply'' for 2
+  burm_nt2 using ``burm_nt2 <- XYZZY'' for 0
+  garply using ``garply <- thud'' for 1
+  waldo using ``waldo <- garply'' for 1
+  thud using ``thud <- fred'' for 0
+  fred using ``fred <- XYZZY'' for 0
+
+start <- garply
+  garply <- thud
+    thud <- fred
+      fred <- XYZZY
+
+          FOO
+    /     | |     \
+PLUGH PLUGH PLUGH PLUGH
+
+T1:
+start <- gloop
+  gloop <- FOO(burm_nt0, burm_nt0, burm_nt0, burm_nt0)
+    burm_nt0 <- PLUGH
+    burm_nt0 <- PLUGH
+    burm_nt0 <- PLUGH
+    burm_nt0 <- PLUGH
+
+[foo,rule1,rule4]
+
+                         FOO
+         /               | |        \
+       BAR             BAR XYZZY     BAZ
+        |               |            / \
+       BAZ             BAZ        BAR  BAR
+      /   \           /  \         |    |
+    BAZ  PLUGH    PLUGH PLUGH    PLUGH PLUGH
+   /  \
+ BAR  BAR
+  |    |
+PLUGH PLUGH
+
+T2:
+start <- gloop
+  gloop <- FOO(burm_nt1, waldo, burm_nt2, burm_nt3)
+    burm_nt1 <- BAR(burm_nt6)
+      burm_nt6 <- BAZ(garply, burm_nt0)
+        garply <- BAZ(burm_nt4, burm_nt4)
+          burm_nt4 <- BAR(burm_nt0)
+            burm_nt0 <- PLUGH
+          burm_nt4 <- BAR(burm_nt0)
+            burm_nt0 <- PLUGH
+        burm_nt0 <- PLUGH
+    waldo <- BAR(burm_nt5)
+      burm_nt5 <- BAZ(burm_nt0, burm_nt0)
+        burm_nt0 <- PLUGH
+        burm_nt0 <- PLUGH
+    burm_nt2 <- XYZZY
+    burm_nt3 <- BAZ(burm_nt7, burm_nt8)
+      burm_nt7 <- BAR(thud)
+        thud <- fred
+          fred <- PLUGH
+      burm_nt8 <- BAR(fred)
+        fred <- PLUGH
+
+[foo,rule1,rule5,rule6,rule7,rule17,rule18,rule18]
+
+T3:
+start <- garply
+  garply <- FOO(waldo, waldo, garply, garply)
+    waldo <- BAR(garply)
+      garply <- waldo
+        waldo <- BAZ(garply, garply)
+          garply <- BAZ(burm_nt4, burm_nt4)
+            burm_nt4 <- BAR(burm_nt0)
+              burm_nt0 <- PLUGH
+            burm_nt4 <- BAR(burm_nt0)
+              burm_nt0 <- PLUGH
+          garply <- thud
+            thud <- PLUGH
+    waldo <- BAR(burm_nt5)
+      burm_nt5 <- BAZ(burm_nt0, burm_nt0)
+        burm_nt0 <- PLUGH
+        burm_nt0 <- PLUGH
+    garply <- thud
+      thud <- fred
+        fred <- XYZZY
+    garply <- BAZ(burm_nt4, burm_nt4)
+      burm_nt4 <- BAR(burm_nt0)
+        burm_nt0 <- PLUGH
+      burm_nt4 <- BAR(burm_nt0)
+        burm_nt0 <- PLUGH
+
+[rule2,rule8,rule9,rule11,rule10,rule6,rule16,rule21,
+ 131.943,rule7,rule16,rule17,rule19,rule6]
+
+                      FOO
+      /               | |        \
+    BAR             BAZ XYZZY     BAZ
+     |              / \           / \
+   BAZ           BAR BAR        BAR  BAR
+  /   \           |   |          |    |
+XYZZY  PLUGH   PLUGH PLUGH    XYZZY XYZZY
+
+T4:
+start <- gloop
+  gloop <- FOO(burm_nt1, waldo, burm_nt2, burm_nt3)
+    burm_nt1 <- BAR(burm_nt6)
+      burm_nt6 <- BAZ(garply, burm_nt0)
+        garply <- thud
+          thud <- fred
+            fred <- XYZZY
+        burm_nt0 <- PLUGH
+    waldo <- garply
+      garply <- BAZ(burm_nt4, burm_nt4)
+        burm_nt4 <- BAR(burm_nt0)
+          burm_nt0 <- PLUGH
+        burm_nt4 <- BAR(burm_nt0)
+          burm_nt0 <- PLUGH
+    burm_nt2 <- XYZZY
+    burm_nt3 <- BAZ(burm_nt7, burm_nt8)
+      burm_nt7 <- BAR(thud)
+        thud <- fred
+          fred <- XYZZY
+      burm_nt8 <- BAR(fred)
+        fred <- XYZZY
+
+[foo,rule1,rule5,rule16,rule17,rule19,rule12,rule6,rule17,
+ rule19,rule19]
+
+T5:
+start <- garply
+  garply <- FOO(waldo, waldo, garply, garply)
+    waldo <- BAR(garply)
+      garply <- BAZ(waldo, waldo)
+        waldo <- garply
+          garply <- thud
+            thud <- fred
+              fred <- XYZZY
+        waldo <- garply
+          garply <- thud
+            thud <- fred
+              fred <- PLUGH
+    waldo <- BAZ(garply, garply)
+      garply <- waldo
+        waldo <- BAR(garply)
+          garply <- thud
+            thud <- fred
+              fred <- PLUGH
+      garply <- waldo
+        waldo <- BAR(garply)
+          garply <- thud
+            thud <- fred
+              fred <- PLUGH
+    garply <- thud
+      thud <- fred
+        fred <- XYZZY
+    garply <- BAZ(waldo, waldo)
+      waldo <- BAR(garply)
+        garply <- thud
+          thud <- fred
+            fred <- XYZZY
+      waldo <- BAR(garply)
+        garply <- thud
+          thud <- fred
+            fred <- XYZZY
+
+[rule2,rule8,rule9,rule13,rule12,rule16,rule17,rule19,
+ rule12,rule16,rule17,rule18,rule10,rule11,rule9,rule16,
+ rule17,rule18,rule11,rule9,rule16,rule17,rule18,rule16,
+ rule17,rule19,rule13,rule9,rule16,rule17,rule19,rule9,
+ rule16,rule17,rule19]
+

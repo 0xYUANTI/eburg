@@ -1,0 +1,34 @@
+
+Terminals MOVE MEM PLUS NAME CONST.
+
+stm <- MOVE(MEM(loc), reg) 4.
+
+reg <- PLUS(con, reg)      3.
+reg <- PLUS(reg, reg)      2.
+reg <- PLUS(MEM(loc), reg) 4.
+reg <- MEM(loc)            4.
+reg <- con                 2.
+
+loc <- reg.
+loc <- NAME.
+loc <- PLUS(NAME, reg).
+
+con <- CONST.
+
+Erlang code.
+-export([main/0]).
+-include("../interface.hrl").
+
+t() ->
+    n('MOVE', [n('MEM', [l('NAME')]),
+               n('PLUS', [n('MEM', [n('PLUS', [l('NAME'),
+                                               n('MEM', [l('NAME')])])]),
+                          l('CONST')])]).
+
+main() ->
+    dumpcover(label(t())).
+
+
+%%% Local Variables:
+%%% mode: erlang
+%%% End:

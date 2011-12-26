@@ -1,0 +1,14 @@
+ld r1, [a]
+addi r1, 4
+subi r1, 10
+
+ld r2, [a]
+subi r2, 3
+ld r3, [b]
+dec r3
+div r2, r3
+shl r2
+addi r2, 3
+
+ld r4, [a]
+addi r4, 2

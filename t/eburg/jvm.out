@@ -1,0 +1,7 @@
+start <- s0
+  s0 <- ILOAD(s1)
+    s1 <- ILOAD(s2)
+      s2 <- IADD(s1)
+        s1 <- ISTORE(s0)
+          s0 <- S0
+

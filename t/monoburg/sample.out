@@ -1,0 +1,12 @@
+reg <- FETCH(addr)
+  addr <- PLUS(con, burm_nt0)
+    con <- CONSTANT
+    burm_nt0 <- MUL(burm_nt1, reg)
+      burm_nt1 <- FOUR
+      reg <- ASSIGN(addr, reg)
+        addr <- con
+          con <- CONSTANT
+        reg <- FETCH(addr)
+          addr <- con
+            con <- CONSTANT
+

@@ -1,0 +1,31 @@
+
+Terminals S0 ILOAD ISTORE IADD.
+
+start <- s0.
+s0    <- S0.
+s0    <- ILOAD(s1)  3.
+s1    <- ILOAD(s2)  3.
+s1    <- ISTORE(s0) 3.
+s2    <- ISTORE(s1) 3.
+s2    <- IADD(s1)   1.
+s0    <- s1         2.
+s1    <- s0         2.
+s0    <- s2         3.
+s1    <- s2         3.
+s2    <- s0         3.
+s2    <- s1         3.
+
+Erlang code.
+-export([main/0]).
+-include("../interface.hrl").
+
+t() ->
+    n('ILOAD', [n('ILOAD', [n('IADD', [n('ISTORE', [l('S0')])])])]).
+
+main() ->
+    dumpcover(label(t())).
+
+
+%%% Local Variables:
+%%% mode: erlang
+%%% End:
